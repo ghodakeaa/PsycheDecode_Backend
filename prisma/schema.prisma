@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  PSYCHOLOGIST
+  COUNSELLOR
+  INTERN
+  CLIENT
+}
+
+enum AccountStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+model User {
+  id           String        @id @default(uuid()) @db.Char(36)
+  fullName     String        @db.VarChar(150)
+  email        String        @unique @db.VarChar(191)
+  passwordHash String        @db.VarChar(255)
+  role         UserRole      @default(CLIENT)
+  status       AccountStatus @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([role])
+  @@index([status])
+  @@map("users")
+}
